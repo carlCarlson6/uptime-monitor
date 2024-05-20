@@ -1,0 +1,14 @@
+@if (IsUp)
+{
+    <p>UP</p>
+}
+else
+{
+    <p>DOWN</p>
+}
+
+@code {
+    [Parameter]
+    public bool IsUp { get; set; }
+
+}
