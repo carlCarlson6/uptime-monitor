@@ -2,6 +2,7 @@ using UptimeMonitor.App.Infrastructure.CosmosDb;
 using UptimeMonitor.App.Infrastructure.MassTransit;
 using UptimeMonitor.App.Infrastructure.Quartz;
 using UptimeMonitor.App.Presentation;
+using UptimeMonitor.App.UptimePanel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services
     .AddQuartzAppJobs()
     .AddMassTransitMessaging()
     .AddCosmosDb()
+    .AddReadAllSitesDefinitions()
+    .AddReadAllSites()
+    .AddStoreNewSite()
     .AddRazorComponents()
     .AddInteractiveServerComponents();
 
