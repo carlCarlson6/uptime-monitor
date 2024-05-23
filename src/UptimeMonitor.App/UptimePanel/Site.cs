@@ -50,6 +50,30 @@ public static class ReadAllSitesExtensions
             sp.GetRequiredService<ReadAllSitesDefinitions>()));
 }
 
+public delegate Task<Site> StoreNewSite(Uri uri, string slug);
+
+public static class StoreNewSiteExtensions
+{
+    private static StoreNewSite StoreNewSite(Container sitesContainer) => async (uri, slug) =>
+    {
+        var siteId = Guid.NewGuid(); 
+        await sitesContainer.CreateItemAsync(
+            new SiteDefinitionDocument(siteId, uri, slug),
+            new PartitionKey(nameof(SiteDefinitionDocument)));
+
+        var response = await new HttpClient().GetAsync(uri);
+        var isUp = response.IsSuccessStatusCode;
+        await sitesContainer.CreateItemAsync(
+            new SiteStatus(Guid.NewGuid(), isUp, DateTimeOffset.UtcNow), 
+            new PartitionKey(siteId.ToString()));
+
+        return new Site(slug, uri, isUp);
+    };
+
+    public static IServiceCollection AddStoreNewSite(this IServiceCollection services) => services
+        .AddSingleton<StoreNewSite>(sp => StoreNewSite(sp.GetRequiredService<Database>().GetContainer("sites")));
+}
+
 public static class MockSites
 {
     public static readonly List<Site> Sites = [

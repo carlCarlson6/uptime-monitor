@@ -17,22 +17,23 @@ builder.Services
     .AddRazorComponents()
     .AddInteractiveServerComponents();
 
-var app = builder.Build();
+var webApp = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (!webApp.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    webApp.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    webApp.UseHsts();
 }
 
-app.UseHttpsRedirection();
+webApp
+    .UseHttpsRedirection()
+    .UseStaticFiles()
+    .UseAntiforgery();
 
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapRazorComponents<App>()
+webApp
+    .MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.Run();
+webApp.Run();

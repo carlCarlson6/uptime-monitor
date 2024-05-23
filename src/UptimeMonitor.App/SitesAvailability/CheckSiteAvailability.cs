@@ -14,8 +14,9 @@ public class CheckSiteAvailabilityConsumer(Database db) : IConsumer<CheckSiteAva
     {
         var (siteId, siteUri) = context.Message;
         var siteIsUp = await ConnectToSite(siteUri);
-
-        await _sitesContainer.CreateItemAsync(new SiteStatus(Guid.NewGuid(), siteIsUp, DateTimeOffset.UtcNow), new PartitionKey(siteId.ToString()));
+        await _sitesContainer.CreateItemAsync(
+            new SiteStatus(Guid.NewGuid(), siteIsUp, DateTimeOffset.UtcNow), 
+            new PartitionKey(siteId.ToString()));
     }
 
     private async Task<bool> ConnectToSite(Uri uri)

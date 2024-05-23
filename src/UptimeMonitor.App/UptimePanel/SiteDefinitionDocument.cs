@@ -30,16 +30,3 @@ public static class ReadAllSitesDefinitionsExtensions
         .AddSingleton<ReadAllSitesDefinitions>(sp => () => 
             ReadAllSitesDefinitions(sp.GetRequiredService<Database>().GetContainer("sites")));
 }
-
-public delegate Task StoreNewSite(Uri uri, string slug);
-
-public static class StoreNewSiteExtensions
-{
-    private static StoreNewSite StoreNewSite(Container sitesContainer) => (uri, slug) => sitesContainer
-        .CreateItemAsync(
-            new SiteDefinitionDocument(Guid.NewGuid(), uri, slug), 
-            new PartitionKey(nameof(SiteDefinitionDocument)));
-
-    public static IServiceCollection AddStoreNewSite(this IServiceCollection services) => services
-        .AddSingleton<StoreNewSite>(sp => StoreNewSite(sp.GetRequiredService<Database>().GetContainer("sites")));
-}
